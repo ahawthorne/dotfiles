@@ -1,0 +1,2 @@
+#!/bin/bash
+openssl rand -base64 27 | cut -c1-27 | sed 's/+/!/g' | sed 's/\//#/g'

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#BACKUP_DST="/var/run/media/ahawthorne/monolith/upgrade-backup/"
+#BACKUP_DST="/run/media/ahawthorne/1f35fcf1-1fd7-43be-8bf0-2b42cdac7997/upgrade_backup"
+BACKUP_DST=/mnt/butter/upgrade_backup
+
+# backup /home
+#rsync -audv \
+rsync -audv --stats --human-readable \
+  --exclude=.cache \
+  --exclude=.ccache \
+  --exclude=.rbenv \
+  --exclude=.nvm \
+  --exclude=Downloads \
+  --exclude=Download \
+  --exclude=tmp \
+  /home/ahawthorne ${BACKUP_DST}
+
+rsync -audv --stats --human-readable \
+  --exclude=.cache \
+  --exclude=.ccache \
+  --exclude=.rbenv \
+  --exclude=.nvm \
+  --exclude=Downloads \
+  --exclude=Download \
+  --exclude=tmp \
+  /home/makerpm ${BACKUP_DST}
+
+# backup /etc
+rsync -audv \
+  /etc ${BACKUP_DST}
+
+# backup /var
+#  --include=lib/pgsql/*** \
+rsync -audv \
+  --include=var/ \
+  --include=lib/ \
+  --include=lib/mysql/*** \
+  --include=www/*** \
+  --exclude=*/ \
+  --exclude=lib/* \
+  /var ${BACKUP_DST}
+
+# pgdumpall
+PGPASSWORD=Domain7! pg_dumpall -c -U domain7 -h 127.0.0.1 | pv | xz -c > ${BACKUP_DST}/pg_dumpall.sql.xz
+#sudo -u postgres pg_dumpall -c -h 127.0.0.1 | pv | xz -c > ${BACKUP_DST}/pg_dumpall.sql.xz
+
+# package list
+rpm -qa --qf "%{NAME}\n" > ${BACKUP_DST}/installed_packages

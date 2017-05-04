@@ -1,0 +1,16 @@
+#!/bin/bash
+
+INS=/home/ahawthorne/include
+
+if [[ -e "${INS}" ]]; then
+  cd $INS
+  sudo pkill chrome
+  wget -O chromium.zip https://download-chromium.appspot.com/dl/Linux_x64
+  yes | unzip chromium.zip
+  sudo chown root:root chrome-linux/chrome_sandbox
+  sudo chmod 4755 chrome-linux/chrome_sandbox
+  rm chromium.zip
+  ${INS}/chrome-linux/chrome-wrapper &
+fi
+
+echo "Done!"

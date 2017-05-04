@@ -1,0 +1,76 @@
+#!/bin/bash
+
+_USER="ahawthorne"
+_HOME="/home/${_USER}"
+
+[[ ! $(grep "fastestmirror" /etc/dnf/dnf.conf) ]] && echo "fastestmirror=1" >> /etc/dnf/dnf.conf
+
+# disable selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config \
+  && setenforce 0
+
+# fstab and mounts
+[ ! -d /mnt/butter ] && mkdir /mnt/butter
+if ! cat /etc/fstab | grep -q butter; then
+  echo "/dev/sdb1		/mnt/butter		btrfs	defaults" | >> /etc/fstab
+fi
+sed -i 's/\(ext4\|swap\)\([ ]\+\)defaults /\1\2defaults,noatime,discard/g' /etc/fstab \
+  && mount -a
+
+# repos and keys
+rpm --import https://dl.google.com/linux/linux_signing_key.pub
+dnf -y install \
+  https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+  https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+dnf config-manager --add-repo http://negativo17.org/repos/fedora-nvidia.repo
+dnf config-manager --add-repo https://docs.docker.com/engine/installation/linux/repo_files/fedora/docker.repo
+
+dnf -y makecache fast
+
+# packages
+dnf -y groupinstall "C Development Tools and Libraries"
+dnf -y install \
+  nvidia-driver nvidia-settings kernel-devel \
+  vim gnome-tweak-tool bind docker-engine docker-compose tmux tmux-powerline meld \
+  http://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
+  freetype-freeworld \
+  gcc gcc-c++ make autoconf automake libtool patch bzip2 bzip2-devel readline \
+  readline-devel gdbm-devel ncurses-devel libdb-devel libffi-devel \
+  openssl-devel libyaml-devel tk-devel zlib zlib-devel bison glibc-common \
+  sqlite libxml2 libxml2-devel libxslt libxslt-devel tcl-devel libpng-devel \
+  libjpeg-devel ghostscript-devel bzip2-devel freetype-devel libtiff-devel \
+  google-roboto-fonts google-roboto-mono-fonts
+
+# docker post-install
+groupadd docker; [ $? -eq 9 -o $? -eq 0 ] && usermod -aG docker ${_USER}
+systemctl enable docker && systemctl start docker
+
+# configure bind local recursion
+sed -i 's/\tlisten-on-v6/\t\/\/ listen-on-v6/g' /etc/named.conf
+if ! cat /etc/sysconfig/named | grep -q 'OPTIONS="-4"'; then
+  echo 'OPTIONS="-4"' >> /etc/sysconfig/named &&
+    systemctl enable named && systemctl restart named
+fi
+
+for i in $(grep -l ^PEERDNS=yes /etc/sysconfig/network-scripts/*); do
+  sed -i 's/PEERDNS=yes/PEERDNS=no/g' $i \
+    && echo "DNS1=127.0.0.1" >> $i
+done \
+  && systemctl restart NetworkManager
+
+# misc
+curl -s https://bitbucket.org/\!api/2.0/snippets/ahawthorne/yeXeM/84830deb296f9703a2d91bed8f38bc6f397cdf8a/files/local.conf > /etc/fonts/local.conf \
+  && sudo -u ${_USER} fc-cache -fv
+
+# replace gnome keyring with ssh agent
+cp /etc/xdg/autostart/gnome-keyring-ssh.desktop ${_HOME}/.config/autostart/ \
+  && echo "X-GNOME-Autostart-enabled=false" >> ${_HOME}/.config/autostart/gnome-keyring-ssh.desktop \
+  && [ ! -d ${_HOME}/.config/systemd/user ] && mkdir -p ${_HOME}/.config/systemd/user \
+  && curl https://bitbucket.org/\!api/2.0/snippets/ahawthorne/Be9R5/845c1537843615158b4395d56dfd5e267313541a/files/ssh-agent.service > ${_HOME}/.config/systemd/user/ssh-agent.service \
+  && chown -R ${_USER}:${_USER} ${_HOME}/.config/systemd \
+  && sudo -u ${_USER} systemctl --user enable ssh-agent.service
+
+# update and reboot for first run
+if uname -r | grep -q 4.8.6; then
+  dnf -y upgrade --refresh && reboot
+fi
