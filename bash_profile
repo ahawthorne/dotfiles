@@ -17,8 +17,11 @@ export PATH
 export EDITOR=vim
 #export $(gnome-keyring-daemon -s)
 export JAVA_HOME="/usr/java/latest"
+
 [[ -s /home/ahawthorne/.nvm/nvm.sh ]] && . /home/ahawthorne/.nvm/nvm.sh # This loads NVM
+
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash

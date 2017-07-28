@@ -33,13 +33,19 @@ dnf -y install \
   nvidia-driver nvidia-settings kernel-devel \
   vim gnome-tweak-tool bind docker-engine docker-compose tmux tmux-powerline meld \
   http://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
-  freetype-freeworld \
+  freetype-freeworld xbacklight mosh \
   gcc gcc-c++ make autoconf automake libtool patch bzip2 bzip2-devel readline \
   readline-devel gdbm-devel ncurses-devel libdb-devel libffi-devel \
   openssl-devel libyaml-devel tk-devel zlib zlib-devel bison glibc-common \
   sqlite libxml2 libxml2-devel libxslt libxslt-devel tcl-devel libpng-devel \
   libjpeg-devel ghostscript-devel bzip2-devel freetype-devel libtiff-devel \
   google-roboto-fonts google-roboto-mono-fonts
+
+# install codecs
+dnf -y install gstreamer1-plugin-mpg123 mpg123-libs gstreamer{1,}-{ffmpeg,libav,plugins-{good,bad{,-free,-nonfree}}} --setopt=strict=0
+
+dnf copr enable seeitcoming/rcm
+dnf install rcm
 
 # docker post-install
 groupadd docker; [ $? -eq 9 -o $? -eq 0 ] && usermod -aG docker ${_USER}
@@ -69,6 +75,9 @@ cp /etc/xdg/autostart/gnome-keyring-ssh.desktop ${_HOME}/.config/autostart/ \
   && curl https://bitbucket.org/\!api/2.0/snippets/ahawthorne/Be9R5/845c1537843615158b4395d56dfd5e267313541a/files/ssh-agent.service > ${_HOME}/.config/systemd/user/ssh-agent.service \
   && chown -R ${_USER}:${_USER} ${_HOME}/.config/systemd \
   && sudo -u ${_USER} systemctl --user enable ssh-agent.service
+
+# increase inotify watchers
+echo fs.inotify.max_user_watches=524288 | tee -a /etc/sysctl.conf && sudo sysctl -p
 
 # update and reboot for first run
 if uname -r | grep -q 4.8.6; then

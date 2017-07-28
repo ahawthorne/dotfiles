@@ -18,6 +18,4 @@ function apg_bloom() {
   apgbfm -i ~/bloomfile
 }
 
-function gvm() {
-  gvim --remote-tab-silent $@
-}
+source <(kubectl completion bash)

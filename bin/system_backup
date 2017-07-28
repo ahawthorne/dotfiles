@@ -3,6 +3,7 @@
 #BACKUP_DST="/var/run/media/ahawthorne/monolith/upgrade-backup/"
 #BACKUP_DST="/run/media/ahawthorne/1f35fcf1-1fd7-43be-8bf0-2b42cdac7997/upgrade_backup"
 BACKUP_DST=/mnt/butter/upgrade_backup
+#BACKUP_DST=/run/media/ahawthorne/5225214d-0ac3-4953-a6a4-18756d5d6730/backup
 
 # backup /home
 #rsync -audv \
@@ -16,15 +17,15 @@ rsync -audv --stats --human-readable \
   --exclude=tmp \
   /home/ahawthorne ${BACKUP_DST}
 
-rsync -audv --stats --human-readable \
-  --exclude=.cache \
-  --exclude=.ccache \
-  --exclude=.rbenv \
-  --exclude=.nvm \
-  --exclude=Downloads \
-  --exclude=Download \
-  --exclude=tmp \
-  /home/makerpm ${BACKUP_DST}
+#rsync -audv --stats --human-readable \
+#  --exclude=.cache \
+#  --exclude=.ccache \
+#  --exclude=.rbenv \
+#  --exclude=.nvm \
+#  --exclude=Downloads \
+#  --exclude=Download \
+#  --exclude=tmp \
+#  /home/makerpm ${BACKUP_DST}
 
 # backup /etc
 rsync -audv \

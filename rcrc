@@ -1,0 +1,3 @@
+EXCLUDES="README.md"
+SYMLINK_DIRS="bin bash_completion.d bash-git-prompt tmux"
+UNDOTTED="bin bash_completion.d bash-git-prompt"

@@ -1,4 +1,6 @@
-source ~/.vim/.bundle
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+endif
 set nocompatible
 " set t_Co=16
 
