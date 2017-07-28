@@ -1,0 +1,13 @@
+IdentityFile /home/ahawthorne/.ssh/id_ed25519
+Protocol 2
+
+host *
+  ServerAliveInterval 120
+  GSSAPIAuthentication no
+  useRoaming no
+
+host *.domain7.com *.domain7.net
+  ControlMaster auto
+  ControlPath ~/tmp/%r@%h:%p
+  Compression yes
+  ForwardAgent yes
