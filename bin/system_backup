@@ -8,11 +8,9 @@ BACKUP_DST=/mnt/butter/upgrade_backup
 # backup /home
 #rsync -audv \
 rsync -audv --stats --human-readable \
-  --exclude=.cache \
   --exclude=.ccache \
   --exclude=.rbenv \
   --exclude=.nvm \
-  --exclude=Downloads \
   --exclude=Download \
   --exclude=tmp \
   /home/ahawthorne ${BACKUP_DST}

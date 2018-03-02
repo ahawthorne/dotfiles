@@ -19,3 +19,11 @@ function apg_bloom() {
 }
 
 source <(kubectl completion bash)
+
+function g() {
+  if [[ $# -gt 0 ]]; then
+    git "$@"
+  else
+    git status
+  fi
+}
