@@ -4,10 +4,24 @@ Protocol 2
 host *
   ServerAliveInterval 120
   GSSAPIAuthentication no
-  useRoaming no
+  # useRoaming no
 
 host *.domain7.com *.domain7.net
   ControlMaster auto
   ControlPath ~/tmp/%r@%h:%p
+  Compression yes
+  ForwardAgent yes
+
+host drupal*.westmont.edu
+  proxycommand ssh aws.westmont.edu -W %h:%p
+  Compression yes
+  ForwardAgent yes
+host *.drupal.westmont.edu
+  proxycommand ssh aws.westmont.edu -W %h:%p
+  Compression yes
+  ForwardAgent yes
+
+host mci-dev.ncl.ac.uk
+  proxycommand ssh nah238@unix.ncl.ac.uk -W %h:%p
   Compression yes
   ForwardAgent yes

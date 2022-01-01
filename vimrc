@@ -33,6 +33,7 @@ set ffs=unix
 set foldmethod=marker
 set pastetoggle=<F2>
 
+let g:snipMate = { 'snippet_version' : 1 }
 let g:jsx_ext_required = 0
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_auto_colors = 0
@@ -56,9 +57,6 @@ set dir=/tmp
 set bdir=/tmp
 "set diffexpr=MyDiff()
 " :hi Search guibg=Yellow guifg=black
-
-let g:instant_markdown_slow = 1
-let g:instant_markdown_autostart = 0
 
 " added extensions
 au BufNewFile,BufRead *.htm7 set filetype=html

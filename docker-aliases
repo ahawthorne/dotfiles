@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function dce-f {
+  docker-compose exec ${@}
+}
+
+function dcu-f {
+  docker-compose up -d
+}
+
+function dcs-f {
+  docker-compose stop
+}
+
+function dc-f {
+  docker-compose ${@}
+}
+
+alias dce=dce-f
+alias dcu=dcu-f
+alias dcs=dcs-f
+alias dc=dc-f
